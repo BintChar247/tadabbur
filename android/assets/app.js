@@ -88,6 +88,7 @@ function show(v, push = true, opts = {}){
   if (v === 'hadith' && !$('#hlist').innerHTML) renderHadith();
   if (v === 'journey') renderJourney();
   if (v === 'lessons') renderLessons();
+  if (v === 'context') renderContext();
   if (v === 'surahs' && isWide()) showInlineOverview(selS);
   $('#jump').classList.remove('on');
 }
@@ -135,7 +136,7 @@ function renderHome(){
       <div class="bism">${X.bismillah}</div>
       <h1>Tadabbur</h1>
       <div class="tag">Meaning, history &amp; context of the Quran</div>
-      <div class="chips"><span class="chip"><b>114</b>Surahs</span><span class="chip"><b>6,236</b>Verses</span><span class="chip"><b>${HAD.length}</b>Hadith</span><span class="chip"><b>2</b>Translations</span></div>
+      <div class="chips"><span class="chip"><b>114</b>Surahs</span><span class="chip"><b>6,236</b>Verses</span><span class="chip"><b>${HAD.length}</b>Hadith</span><span class="chip"><b>114</b>Deep studies</span><span class="chip"><b>2</b>Translations</span></div>
       <div><button class="cta" onclick="show('surahs')">${I.list}Browse the surahs</button></div>
     </div></div>`;
   const last = store.get('last', null) || (store.get('x', null), (()=>{ try{ const v = JSON.parse(localStorage.getItem('s26.last')); return v ? {s:26, v} : null; }catch(e){ return null; } })());
@@ -144,17 +145,22 @@ function renderHome(){
     <button class="cont" onclick="openRead(${L.s},${L.v})"><span class="ci"><b>${esc(ls.tl)}</b><small>${esc(ls.m)} · verse ${L.v} of ${ls.c}</small></span><span class="ca">${ls.ar}</span></button>
     <div class="vmap" style="margin-top:14px"><i style="flex:${L.v};background:var(--gold)"></i><i style="flex:${Math.max(0, ls.c - L.v)};background:var(--line)"></i></div>
     <div class="btnrow"><button class="pill gold" onclick="openRead(${L.s},${L.v})">${I.play} ${last ? 'Continue' : 'Begin with Al-Fatihah'}</button><button class="pill" onclick="openOverview(${L.s})">About this surah</button></div>`;
-  $('#feature').innerHTML = `<button class="deepcard" onclick="openOverview(26)"><span class="bg-ar">الشعراء</span><span class="eyebrow">Surah 26 · Featured</span><b>Ash-Shu'ara: The Poets</b><small>Seven prophets, one message. The full journey, verse-by-verse insights, history, du'as and lessons.</small></button>`;
+  const dayS = (Math.floor((Date.now() + 7 * 3.6e6) / 864e5) % 114) + 1, ds = S(dayS), ddp = deepOf(dayS);
+  $('#feature').innerHTML = `<div class="home2">
+    <button class="deepcard" style="margin:0" onclick="openDeep(${dayS},'context')"><span class="bg-ar">${ds.ar}</span><span class="eyebrow">Today's surah · ${dayS}</span><b>${esc(ds.tl)}: ${esc(ds.m)}</b><small>${fmt(ddp.hist[0].p[0].split('. ').slice(0, 2).join('. ').replace(/\.?$/, '.'))}</small>
+      <span class="btnrow" style="margin-top:12px"><span class="pill gold">${I.ctx} History</span></span></button>
+    <button class="deepcard" style="margin:0" onclick="openOverview(26)"><span class="bg-ar">الشعراء</span><span class="eyebrow">Featured · Surah 26</span><b>Ash-Shu'ara: The Poets</b><small>Our richest study: seven prophets, one message, with a glossary, du'as and a nine-part journey.</small>
+      <span class="btnrow" style="margin-top:12px"><span class="pill gold">${I.path} Explore</span></span></button></div>`;
   const tiles = [
-    ['surahs', I.list, 'All 114 Surahs', 'Overview, context and themes of each', 'سور'],
+    ['surahs', I.list, 'All 114 Surahs', 'Each with history, journey and lessons', 'سور'],
     ['juz30', I.moon, "Juz 'Amma", 'The short surahs, 78–114', 'عم'],
     ['hadith', I.scroll, 'Hadith', HAD.length + ' authentic narrations linked to verses', 'حديث'],
-    ['journey', I.path, 'The Journey', 'Seven prophets of Ash-Shu\'ara', 'رحلة'],
-    ['context', I.ctx, 'History & Context', 'Makkah, poets and the Quraysh', 'تاريخ'],
-    ['lessons', I.lamp, 'Lessons & Du\'as', 'Wisdom for daily life', 'عبرة']
+    ['d-journey', I.path, 'Journey of the day', esc(ds.tl) + ' in ' + ddp.secs.length + ' parts', 'رحلة'],
+    ['d-lessons', I.lamp, 'Lessons of the day', 'From ' + esc(ds.tl), 'عبرة'],
+    ['saved', I.mark, 'Saved verses', 'Your bookmarks', 'حفظ']
   ];
   $('#tiles').innerHTML = tiles.map(t => `<button class="tile" data-go="${t[0]}"><span class="ic">${t[1]}</span><b>${t[2]}</b><small>${t[3]}</small><span class="bg-ar">${t[4]}</span></button>`).join('');
-  $$('#tiles .tile').forEach(b => b.onclick = () => { const g = b.dataset.go; if (g === 'juz30'){ sFilter = 'j30'; renderIndex(); show('surahs'); } else show(g); });
+  $$('#tiles .tile').forEach(b => b.onclick = () => { const g = b.dataset.go; if (g === 'juz30'){ sFilter = 'j30'; renderIndex(); show('surahs'); } else if (g.startsWith('d-')) openDeep(dayS, g.slice(2)); else show(g); });
   $('#credits').innerHTML = `Arabic: Uthmani script, King Fahd Complex (via QuranEnc). English: Saheeh International. Indonesian: Kementerian Agama RI. Hadith: Sunnah.com texts, translations and gradings. Commentary summarised from classical tafsir (Ibn Kathir, al-Tabari, al-Qurtubi).<br><span class="sym" style="font-size:20px;color:var(--gold)">وَٱللَّهُ أَعۡلَمُ</span><br>And Allah knows best.`;
   $('#sources').innerHTML = $('#credits').innerHTML;
   renderVom();
@@ -173,7 +179,7 @@ function renderVom(){
 
 /* ---------- surah index ---------- */
 let sFilter = 'all', selS = 26;
-const FILT = [['all','All'],['Makki','Makki'],['Madani','Madani'],['j30',"Juz 'Amma"],['hadith','With hadith'],['deep','Deep study']];
+const FILT = [['all','All'],['Makki','Makki'],['Madani','Madani'],['j30',"Juz 'Amma"],['hadith','With hadith']];
 $('#sfilt').innerHTML = FILT.map(f => `<button data-f="${f[0]}">${f[1]}</button>`).join('');
 $$('#sfilt button').forEach(b => b.onclick = () => { sFilter = b.dataset.f; renderIndex(); });
 window.renderIndex = function(){
@@ -191,7 +197,7 @@ window.renderIndex = function(){
   let h = '', lastJ = 0;
   list.forEach(s => {
     if (!q && sFilter === 'all' && s.j !== lastJ){ h += `<div class="jhead">Juz ${s.j}</div>`; lastJ = s.j; }
-    h += `<button class="srow ${s.n === selS && isWide() ? 'sel' : ''}" data-s="${s.n}"><span class="sn"><b>${s.n}</b></span><span class="si"><b>${esc(s.tl)}${s.n === 26 ? '<span class="deep">DEEP</span>' : ''}</b><small>${esc(s.m)} · ${s.t} · ${s.c} verses${HS[s.n] ? ' · ' + HS[s.n].length + ' hadith' : ''}</small></span><span class="sa">${s.ar}</span></button>`;
+    h += `<button class="srow ${s.n === selS && isWide() ? 'sel' : ''}" data-s="${s.n}"><span class="sn"><b>${s.n}</b></span><span class="si"><b>${esc(s.tl)}${s.n === 26 ? '<span class="deep">FEATURED</span>' : ''}</b><small>${esc(s.m)} · ${s.t} · ${s.c} verses${HS[s.n] ? ' · ' + HS[s.n].length + ' hadith' : ''}</small></span><span class="sa">${s.ar}</span></button>`;
   });
   $('#slist').innerHTML = h || '<div class="empty">No surah matches.</div>';
   $$('#slist .srow').forEach(b => b.onclick = () => openOverview(+b.dataset.s));
@@ -233,8 +239,9 @@ document.addEventListener('click', e => {
 });
 function overviewHTML(n){
   const s = S(n), hs = HS[n] || [];
-  const deep = n === 26 ? `<button class="deepcard" data-deep="journey"><span class="bg-ar">رحلة</span><span class="eyebrow">Deep study available</span><b>Explore Ash-Shu'ara in depth</b><small>The nine-part journey, the history behind it, verse insights, du'as and lessons.</small></button>
-    <div class="deepgrid"><button data-deep="journey">${I.path}Journey</button><button data-deep="context">${I.ctx}Context</button><button data-deep="lessons">${I.lamp}Lessons</button></div>` : '';
+  const dp = deepOf(n), nIns = dp ? Object.keys(dp.notes).length : 0;
+  const deep = dp ? `<button class="deepcard" data-deep="journey"><span class="bg-ar">تدبر</span><span class="eyebrow">Deep study</span><b>Understand ${esc(s.tl)} in depth</b><small>The history behind it, ${[8,11,18].includes(dp.secs.length) ? "an" : "a"} ${dp.secs.length}-part journey through the surah${nIns ? ', ' + nIns + ' verse insights' : ''}, lessons and questions for reflection.</small></button>
+    <div class="deepgrid"><button data-deep="context">${I.ctx}History</button><button data-deep="journey">${I.path}Journey</button><button data-deep="lessons">${I.lamp}Lessons</button></div>` : '';
   return `<div class="card" style="padding:22px">
     <div class="ov-hero"><div class="medal">${starSVG}<div class="name">${s.ar}</div></div>
       <div class="eyebrow">Surah ${n}</div><h3>${esc(s.tl)}</h3><div class="sub">${esc(s.m)}</div></div>
@@ -244,7 +251,7 @@ function overviewHTML(n){
     <div class="orn" style="margin:22px 0 12px"><span>۞</span></div>
     <div class="eyebrow">What it is about</div>
     <div class="prose" style="margin-top:6px"><p>${fmt(s.sum)}</p></div>
-    <div class="callout"><span class="eyebrow">History &amp; context</span><p>${fmt(s.ctx)}</p></div>
+    <div class="callout"><span class="eyebrow">History &amp; context</span><p>${fmt(s.ctx)}</p>${dp ? `<button class="lk" style="color:var(--gold);font-size:12px;font-weight:600;letter-spacing:.8px;margin-top:8px" data-deep="context">READ THE FULL HISTORY →</button>` : ''}</div>
     <div class="eyebrow" style="margin-top:16px">Main themes</div>
     <div class="themes">${s.th.map(t => `<span>${fmt(t)}</span>`).join('')}</div>
     <div class="orn" style="margin:22px 0 6px"><span>۞</span></div>
@@ -258,7 +265,7 @@ function overviewHTML(n){
 }
 function bindOverview(root, n){
   root.querySelectorAll('[data-read]').forEach(b => b.onclick = () => openRead(n, 1));
-  root.querySelectorAll('[data-deep]').forEach(b => b.onclick = () => show(b.dataset.deep));
+  root.querySelectorAll('[data-deep]').forEach(b => b.onclick = () => openDeep(n, b.dataset.deep));
   root.querySelectorAll('[data-ov]').forEach(b => b.onclick = () => { if (root.id === 'ov-inline') { selS = +b.dataset.ov; showInlineOverview(selS); } else openOverview(+b.dataset.ov, false); });
   load(n).then(vs => {
     const box = root.querySelector('[data-kv="' + n + '"]'); if (!box) return;
@@ -274,7 +281,7 @@ const REFRAIN = 'إِنَّ فِي ذَٰلِكَ لَأٓيَة';
 function verseHTML(s, v, vs){
   const n = v.n, key = s + ':' + n, on = marks.includes(key);
   const ref = s === 26 && (v.ar.includes(REFRAIN) || (n > 1 && vs[n-2].ar.includes(REFRAIN)));
-  const note = s === 26 ? D.notes[n] : null, hv = HV[key] || [];
+  const dp = deepOf(s), note = dp ? dp.notes[n] : null, hv = HV[key] || [];
   return `<div class="verse ${ref ? 'refrain has-badge' : ''}" id="v${n}" data-n="${n}">
     ${ref ? `<div class="badge">${I.spark}<span>The refrain</span></div>` : ''}
     <div class="ar">${v.ar}<span class="num"><b>${AR_DIG(n)}</b></span></div>
@@ -304,9 +311,10 @@ function ensureReader(verse){
     else h += `<div class="rd-head"><div class="eyebrow" style="padding-top:10px">${s === 9 ? 'This surah begins without the Bismillah' : 'The Opening'}</div></div>`;
     const sl = surahLevelH(s);
     if (sl.length) h += `<details class="surah-h"><summary>${I.scroll}<span>${sl.length} hadith about this surah</span></summary>${sl.map(x => hadithCard(x, s)).join('')}</details>`;
-    if (s === 26){
-      D.sections.forEach(sec => {
-        h += `<div class="secbar"><div class="frame"><div class="ar-s">${sec.ar}</div><div class="en-s">${esc(sec.title)}</div><div class="r">VERSES ${sec.from}–${sec.to}</div></div></div>`;
+    const dpr = deepOf(s);
+    if (dpr && dpr.secs.length > 1){
+      dpr.secs.forEach((sec, i) => {
+        h += `<div class="secbar"><div class="frame">${sec.ar ? `<div class="ar-s">${sec.ar}</div>` : `<div class="ar-s">${AR_DIG(i + 1)}</div>`}<div class="en-s">${esc(sec.title)}</div><div class="r">VERSES ${sec.from}${sec.to > sec.from ? '–' + sec.to : ''}</div></div></div>`;
         for (let n = sec.from; n <= sec.to; n++) h += verseHTML(s, vs[n-1], vs);
       });
     } else vs.forEach(v => h += verseHTML(s, v, vs));
@@ -390,74 +398,116 @@ function renderSaved(){
   });
 }
 
-/* ---------- deep study 26 ---------- */
-function renderContext(){
-  $('#ctx').innerHTML = D.context.map((c, i) => `<div class="card ctx"><span class="ar-c">${c.ar}</span><div class="eyebrow">${['Setting','The accusations','Culture','Sister surahs','Structure','Seven sicknesses'][i] || ''}</div><h4>${esc(c.t)}</h4>${c.p.map(p => `<p>${fmt(p)}</p>`).join('')}</div>`).join('');
-  $('#gloss').innerHTML = D.glossary.map(g => `<div class="gl"><div class="g-ar">${g[1]}</div><b>${g[0]}</b><span>${fmt(g[2])}</span></div>`).join('');
+/* ---------- deep study (every surah) ---------- */
+const DEEP = window.DEEP || {};
+let dS = 26;
+const CTX_EYE = ['Setting','The accusations','Culture','Sister surahs','Structure','Seven sicknesses'];
+function deepOf(n){
+  if (n === 26) return {
+    hist: D.context.map((c, i) => ({t:c.t, ar:c.ar, eye:CTX_EYE[i], p:c.p})),
+    glossary: D.glossary,
+    secs: D.sections.map(x => ({from:x.from, to:x.to, title:x.title, ar:x.ar, sub:x.sub, people:x.people, summary:x.summary, lesson:x.lesson, mirror:x.mirror, key:x.key})),
+    notes: D.notes, key: [], lessons: D.lessons, reflect: D.reflect, duas: D.duas
+  };
+  const d = DEEP[n]; if (!d) return null;
+  return {
+    hist: [{t:'How it was revealed', ar:'أسباب النزول', eye:'History & context', p:d.h}],
+    glossary: [], duas: [],
+    secs: d.s.map(x => ({from:x[0], to:x[1], title:x[2], summary:[x[3]]})),
+    notes: d.n, key: d.k || [], lessons: d.l.map(l => ({t:l[0], v:l[1], d:l[2]})), reflect: d.r
+  };
 }
-const SECCOL = ['#D9B66F','#4FA88A','#C9906B','#6E9BC6','#B9A15A','#C47A6A','#8E86C2','#5FB3A6','#E3C88E'];
-let selSec = 'musa';
-const secById = id => D.sections.find(s => s.id === id);
+function setDeepHeads(){
+  const m = S(dS);
+  $$('.deep-ar').forEach(e => e.textContent = m.ar);
+  $$('.deep-tl').forEach(e => e.textContent = m.tl + ' · ' + m.m);
+}
+function renderContext(){
+  const dp = deepOf(dS), m = S(dS); setDeepHeads();
+  $('#ctx').innerHTML = `<div class="card ctx" style="grid-column:1/-1"><span class="ar-c">${m.ar}</span><div class="eyebrow">Surah ${dS} · ${m.t === 'Makki' ? 'Revealed in Makkah' : 'Revealed in Madinah'}</div><h4>${esc(m.tl)}: ${esc(m.m)}</h4><p>${fmt(m.sum)}</p></div>` +
+    dp.hist.map(c => `<div class="card ctx"><span class="ar-c">${c.ar}</span><div class="eyebrow">${esc(c.eye || '')}</div><h4>${esc(c.t)}</h4>${c.p.map(p => `<p>${fmt(p)}</p>`).join('')}</div>`).join('') +
+    `<div class="card ctx"><div class="eyebrow">Main themes</div><div class="themes">${m.th.map(t => `<span>${fmt(t)}</span>`).join('')}</div>
+     <div class="btnrow"><button class="pill gold" onclick="show('journey')">${I.path} The Journey</button><button class="pill" onclick="openRead(${dS},1)">${I.read} Read</button></div></div>`;
+  $('#gloss-wrap').style.display = dp.glossary.length ? '' : 'none';
+  $('#gloss').innerHTML = dp.glossary.map(g => `<div class="gl"><div class="g-ar">${g[1]}</div><b>${g[0]}</b><span>${fmt(g[2])}</span></div>`).join('');
+}
+const SECCOL = ['#D9B66F','#4FA88A','#C9906B','#6E9BC6','#B9A15A','#C47A6A','#8E86C2','#5FB3A6','#E3C88E','#9FB86A','#C98FB0','#7FA7B8','#D2A06A','#8FB59A','#B88E7A','#A3A0D0'];
+let selSec = 0, secFor = 0;
 function renderJourney(){
-  load(26).then(() => {
-    $('#vmap').innerHTML = D.sections.map((s, i) => `<i title="${s.title}" style="flex:${s.to - s.from + 1};background:${SECCOL[i]}"></i>`).join('');
-    $('#tl').innerHTML = D.sections.map((s, i) => `
-      <button class="step ${s.id === selSec && isWide() ? 'sel' : ''}" data-id="${s.id}">
+  const dp = deepOf(dS), m = S(dS); setDeepHeads();
+  if (secFor !== dS){ selSec = dS === 26 ? 1 : 0; secFor = dS; }
+  $('#j-intro').textContent = dp.secs.length > 1 ? `${m.tl} moves in ${dp.secs.length} parts. Each bar is sized by its number of verses; tap a part to explore it.` : `${m.tl} is a single, unified passage of ${m.c} verses.`;
+  $('#j-end').textContent = 'v. ' + m.c;
+  load(dS).then(() => {
+    $('#vmap').innerHTML = dp.secs.map((s, i) => `<i title="${esc(s.title)}" style="flex:${s.to - s.from + 1};background:${SECCOL[i % SECCOL.length]}"></i>`).join('');
+    $('#tl').innerHTML = dp.secs.map((s, i) => `
+      <button class="step ${i === selSec && isWide() ? 'sel' : ''}" data-i="${i}">
         <span class="knot"><span>${AR_DIG(i + 1)}</span></span>
-        <span class="card"><span class="ar-n">${s.ar}</span>
-          <div class="rng" style="color:${SECCOL[i]}">VERSES ${s.from}–${s.to} · ${s.to - s.from + 1} AYAT</div>
-          <h4>${esc(s.title)}</h4><p>${fmt(s.sub)}</p></span>
+        <span class="card">${s.ar ? `<span class="ar-n">${s.ar}</span>` : ''}
+          <div class="rng" style="color:${SECCOL[i % SECCOL.length]}">VERSES ${s.from}${s.to > s.from ? '–' + s.to : ''} · ${s.to - s.from + 1} AYAT</div>
+          <h4>${esc(s.title)}</h4><p>${fmt(s.sub || s.summary[0])}</p></span>
       </button>`).join('');
-    $$('#tl .step').forEach(b => b.onclick = () => openSection(b.dataset.id));
+    $$('#tl .step').forEach(b => b.onclick = () => openSection(+b.dataset.i));
     if (isWide()){ $('#jdetail-inline').innerHTML = detailHTML(selSec); bindDetail($('#jdetail-inline')); }
   });
 }
-function openSection(id){
-  selSec = id;
-  if (isWide()){ $$('#tl .step').forEach(x => x.classList.toggle('sel', x.dataset.id === id)); $('#jdetail-inline').innerHTML = detailHTML(id); $('#jdetail-inline').scrollTop = 0; bindDetail($('#jdetail-inline')); }
-  else { $('#detail').innerHTML = detailHTML(id); bindDetail($('#detail')); $('#dt-title').textContent = secById(id).title; if (cur === 'detail') window.scrollTo(0, 0); else show('detail'); }
+function openSection(i){
+  selSec = i; const dp = deepOf(dS);
+  if (isWide()){ $$('#tl .step').forEach(x => x.classList.toggle('sel', +x.dataset.i === i)); $('#jdetail-inline').innerHTML = detailHTML(i); $('#jdetail-inline').scrollTop = 0; bindDetail($('#jdetail-inline')); }
+  else { $('#detail').innerHTML = detailHTML(i); bindDetail($('#detail')); $('#dt-title').textContent = dp.secs[i].title; if (cur === 'detail') window.scrollTo(0, 0); else show('detail'); }
 }
-function detailHTML(id){
-  const s = secById(id), i = D.sections.indexOf(s), V = cache[26];
-  const hs = []; for (let n = s.from; n <= s.to; n++) (HV['26:' + n] || []).forEach(h => hs.includes(h) || hs.push(h));
+function detailHTML(i){
+  const dp = deepOf(dS), s = dp.secs[i], V = cache[dS], m = S(dS);
+  const hs = []; for (let n = s.from; n <= s.to; n++) (HV[dS + ':' + n] || []).forEach(h => hs.includes(h) || hs.push(h));
+  let keys = s.key ? s.key.slice() : [];
+  if (!s.key){
+    const inR = v => v >= s.from && v <= s.to;
+    keys = [...new Set([...Object.keys(dp.notes).map(Number).filter(inR), ...dp.key.filter(inR), ...dp.lessons.map(l => l.v).filter(inR)])].sort((a, b) => a - b);
+    if (!keys.length) keys = [s.from];
+  }
+  const verseBlock = n => `<div class="kv"><div class="n">VERSE ${n}</div><div class="ar">${V[n-1].ar}</div><div class="en">${esc(trAny(V[n-1]))}</div>${dp.notes[n] && !s.key ? `<div class="callout" style="margin:10px 0 0"><span class="eyebrow">Insight</span><p>${fmt(dp.notes[n])}</p></div>` : ''}</div>`;
   return `<div class="card" style="padding:22px">
-    <div class="det-hero"><div class="big">${s.ar}</div><h3>${esc(s.title)}</h3><div class="sub">${fmt(s.sub)}</div></div>
-    <div class="meta"><span class="chip"><b>${s.from}–${s.to}</b>verses</span><span class="chip">${fmt(s.people)}</span></div>
+    <div class="det-hero"><div class="big">${s.ar || AR_DIG(i + 1)}</div><div class="eyebrow">${esc(m.tl)} · part ${i + 1} of ${dp.secs.length}</div><h3>${esc(s.title)}</h3>${s.sub ? `<div class="sub">${fmt(s.sub)}</div>` : ''}</div>
+    <div class="meta"><span class="chip"><b>${s.from}${s.to > s.from ? '–' + s.to : ''}</b>${s.to > s.from ? 'verses' : 'verse'}</span>${s.people ? `<span class="chip">${fmt(s.people)}</span>` : ''}</div>
     <div class="prose">${s.summary.map(p => `<p>${fmt(p)}</p>`).join('')}</div>
-    <div class="callout"><span class="eyebrow">The lesson</span><p>${fmt(s.lesson)}</p></div>
-    <div class="callout" style="border-color:var(--accent)"><span class="eyebrow" style="color:var(--accent)">A mirror for Makkah</span><p>${fmt(s.mirror)}</p></div>
+    ${s.lesson ? `<div class="callout"><span class="eyebrow">The lesson</span><p>${fmt(s.lesson)}</p></div>` : ''}
+    ${s.mirror ? `<div class="callout" style="border-color:var(--accent)"><span class="eyebrow" style="color:var(--accent)">A mirror for Makkah</span><p>${fmt(s.mirror)}</p></div>` : ''}
     <div class="orn" style="margin:22px 0 6px"><span>۞</span></div>
-    <div class="eyebrow" style="text-align:center">Key verses</div>
-    ${s.key.map(n => `<div class="kv"><div class="n">VERSE ${n}</div><div class="ar">${V[n-1].ar}</div><div class="en">${esc(trAny(V[n-1]))}</div></div>`).join('')}
+    <div class="eyebrow" style="text-align:center">Key verses${!s.key ? ' &amp; insights' : ''}</div>
+    ${keys.map(verseBlock).join('')}
     ${hs.length ? `<div class="orn" style="margin:22px 0 6px"><span>۞</span></div><div class="eyebrow" style="text-align:center;margin-bottom:12px">From the Hadith</div>${hs.map(h => hadithCard(h, -1)).join('')}` : ''}
     <div class="btnrow" style="justify-content:center">
-      <button class="pill gold" data-read="${s.from}">${I.read} Read verses ${s.from}–${s.to}</button>
-      ${i < D.sections.length - 1 ? `<button class="pill" data-next="${D.sections[i+1].id}">Next: ${esc(D.sections[i+1].title)} ${I.arrow}</button>` : ''}
+      <button class="pill gold" data-read="${s.from}">${I.read} Read ${s.to > s.from ? 'verses ' + s.from + '–' + s.to : 'verse ' + s.from}</button>
+      ${i < dp.secs.length - 1 ? `<button class="pill" data-next="${i + 1}">Next: ${esc(dp.secs[i+1].title)} ${I.arrow}</button>` : `<button class="pill" data-lessons="1">${I.lamp} Lessons</button>`}
     </div></div>`;
 }
 function bindDetail(root){
-  root.querySelectorAll('[data-read]').forEach(b => b.onclick = () => openRead(26, +b.dataset.read));
-  root.querySelectorAll('[data-next]').forEach(b => b.onclick = () => openSection(b.dataset.next));
+  root.querySelectorAll('[data-read]').forEach(b => b.onclick = () => openRead(dS, +b.dataset.read));
+  root.querySelectorAll('[data-next]').forEach(b => b.onclick = () => openSection(+b.dataset.next));
+  root.querySelectorAll('[data-lessons]').forEach(b => b.onclick = () => show('lessons'));
 }
 let lessonTab = 'lessons';
 $$('#lseg button').forEach(b => b.onclick = () => { lessonTab = b.dataset.t; renderLessons(); });
 function renderLessons(){
-  $$('#lseg button').forEach(b => b.classList.toggle('on', b.dataset.t === lessonTab));
+  const dp = deepOf(dS); setDeepHeads();
+  if (lessonTab === 'duas' && !dp.duas.length) lessonTab = 'lessons';
+  $$('#lseg button').forEach(b => { b.classList.toggle('on', b.dataset.t === lessonTab); if (b.dataset.t === 'duas') b.style.display = dp.duas.length ? '' : 'none'; });
   const body = $('#lbody');
-  load(26).then(V => {
+  load(dS).then(V => {
     if (lessonTab === 'lessons'){
-      body.innerHTML = `<div class="lessons-grid">${D.lessons.map((l, i) => `<div class="card lesson"><div class="ln">${i+1}</div><div><b>${esc(l.t)}</b><p>${fmt(l.d)}</p><button class="lk" data-v="${l.v}">VERSE ${l.v} →</button></div></div>`).join('')}</div>`;
+      body.innerHTML = `<div class="lessons-grid">${dp.lessons.map((l, i) => `<div class="card lesson"><div class="ln">${i+1}</div><div><b>${esc(l.t)}</b><p>${fmt(l.d)}</p><div class="ar" style="font-size:calc(var(--ar-size) - 8px);line-height:2;color:var(--gold2);margin:4px 0;text-align:right">${V[l.v-1].ar}</div><button class="lk" data-v="${l.v}">VERSE ${l.v} →</button></div></div>`).join('')}</div>`;
     } else if (lessonTab === 'duas'){
-      body.innerHTML = `<div class="lessons-grid">${D.duas.map(d => { const vs = V.slice(d.from - 1, d.to); return `<div class="card dua"><div class="eyebrow t">${esc(d.t)}</div><div class="ar">${vs.map(v => v.ar + ` <span style="color:var(--gold);font-size:.6em">﴿${AR_DIG(v.n)}﴾</span>`).join(' ')}</div><div class="en">${vs.map(v => esc(trAny(v))).join(' ')}</div><div style="text-align:center;margin-top:10px"><button class="lk" style="color:var(--gold);font-size:12px;font-weight:600;letter-spacing:.8px" data-v="${d.from}">VERSES ${d.from}${d.to > d.from ? '–' + d.to : ''}</button></div></div>`; }).join('')}</div>`;
+      body.innerHTML = `<div class="lessons-grid">${dp.duas.map(d => { const vs = V.slice(d.from - 1, d.to); return `<div class="card dua"><div class="eyebrow t">${esc(d.t)}</div><div class="ar">${vs.map(v => v.ar + ` <span style="color:var(--gold);font-size:.6em">﴿${AR_DIG(v.n)}﴾</span>`).join(' ')}</div><div class="en">${vs.map(v => esc(trAny(v))).join(' ')}</div><div style="text-align:center;margin-top:10px"><button class="lk" style="color:var(--gold);font-size:12px;font-weight:600;letter-spacing:.8px" data-v="${d.from}">VERSES ${d.from}${d.to > d.from ? '–' + d.to : ''}</button></div></div>`; }).join('')}</div>`;
     } else {
-      body.innerHTML = `<div class="card"><div class="eyebrow">Tadabbur · تدبر</div><h3 class="sec">Questions for your heart</h3><p class="small" style="margin-top:0">Tadabbur means deep reflection on the Quran. Take one question with you today, perhaps after a prayer, and sit with it.</p>${D.reflect.map(q => `<div class="q">${esc(q)}</div>`).join('')}</div>`;
+      body.innerHTML = `<div class="card"><div class="eyebrow">Tadabbur · تدبر</div><h3 class="sec">Questions for your heart</h3><p class="small" style="margin-top:0">Tadabbur means deep reflection on the Quran. Take one question with you today, perhaps after a prayer, and sit with it.</p>${dp.reflect.map(q => `<div class="q">${esc(q)}</div>`).join('')}</div>`;
     }
-    body.querySelectorAll('[data-v]').forEach(b => b.onclick = () => openRead(26, +b.dataset.v));
+    body.querySelectorAll('[data-v]').forEach(b => b.onclick = () => openRead(dS, +b.dataset.v));
   });
 }
+window.openDeep = function(n, view){ dS = n; show(view, true, {force:true}); };
 
 /* ---------- init ---------- */
-applyPrefs(); renderHome(); renderIndex(); renderContext();
+applyPrefs(); renderHome(); renderIndex();
 let lastW = innerWidth;
 window.addEventListener('resize', () => {
   const w = innerWidth; if ((w >= 700) === (lastW >= 700)) { lastW = w; return; }
@@ -474,7 +524,8 @@ if (location.hash){
   if (hv === 'day'){ P.theme = 'day'; applyPrefs(); }
   else if (hv === 'read') openRead(+ha || 1, +hb || 0);
   else if (hv === 'surah') openOverview(+ha || 1);
-  else if (hv === 'detail'){ load(26).then(() => { show('journey'); openSection(ha); }); }
+  else if (hv === 'detail'){ dS = +ha || 26; load(dS).then(() => { show('journey'); openSection(+hb || 0); }); }
+  else if (hv === 'deep'){ openDeep(+ha || 26, hb || 'journey'); }
   else if (hv === 'sheet') openSheet();
   else if (document.getElementById('v-' + hv)) show(hv);
   $('#splash').classList.add('out');

@@ -28,7 +28,7 @@
       <div class="card" id="cont"></div>
       <div class="card vom" id="vom"></div>
     </div>
-    <div class="secttl"><h3>Deep study</h3></div>
+    <div class="secttl"><h3>Deep study</h3><button onclick="show('surahs')">All 114 →</button></div>
     <div id="feature"></div>
     <div class="secttl"><h3>Explore</h3></div>
     <div class="grid" id="tiles"></div>
@@ -89,23 +89,23 @@
 
 <!-- DEEP STUDY 26: CONTEXT -->
 <section class="view" id="v-context">
-  <div class="top"><button class="iconbtn" onclick="goBack()" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button><h2>History &amp; Context</h2><span class="ar-t">الشعراء</span></div>
+  <div class="top"><button class="iconbtn" onclick="goBack()" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button><div class="ttl"><h2>History &amp; Context</h2><small class="deep-tl"></small></div><span class="ar-t deep-ar"></span></div>
   <div class="wrap">
     <div class="ctx-grid" id="ctx"></div>
-    <div class="orn"><span>۞</span></div>
+    <div id="gloss-wrap"><div class="orn"><span>۞</span></div>
     <div class="eyebrow">Key words</div>
     <h3 class="sec">A small glossary</h3>
-    <div class="card" id="gloss"></div>
+    <div class="card" id="gloss"></div></div>
   </div>
 </section>
 
 <!-- DEEP STUDY 26: JOURNEY -->
 <section class="view" id="v-journey">
-  <div class="top"><button class="iconbtn" onclick="goBack()" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button><h2>The Journey</h2><span class="ar-t">الشعراء</span></div>
+  <div class="top"><button class="iconbtn" onclick="goBack()" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button><div class="ttl"><h2>The Journey</h2><small class="deep-tl"></small></div><span class="ar-t deep-ar"></span></div>
   <div class="wrap">
-    <p style="color:var(--ink2);margin:0">Ash-Shu'ara moves in nine movements: an opening, seven prophets, and a closing. Each bar is sized by its number of verses.</p>
+    <p style="color:var(--ink2);margin:0" id="j-intro"></p>
     <div class="vmap" id="vmap"></div>
-    <div class="vmap-l"><span>v. 1</span><span>v. 227</span></div>
+    <div class="vmap-l"><span>v. 1</span><span id="j-end"></span></div>
     <div class="split">
       <div class="tl" id="tl"></div>
       <div class="pane-r" id="jdetail-inline"></div>
@@ -121,7 +121,7 @@
 
 <!-- DEEP STUDY 26: LESSONS -->
 <section class="view" id="v-lessons">
-  <div class="top"><button class="iconbtn" onclick="goBack()" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button><h2>Lessons &amp; Reflection</h2><span class="ar-t">الشعراء</span></div>
+  <div class="top"><button class="iconbtn" onclick="goBack()" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button><div class="ttl"><h2>Lessons &amp; Reflection</h2><small class="deep-tl"></small></div><span class="ar-t deep-ar"></span></div>
   <div class="wrap">
     <div class="seg" id="lseg">
       <button class="on" data-t="lessons">Lessons</button><button data-t="duas">Du'as</button><button data-t="reflect">Reflect</button>
@@ -151,6 +151,7 @@
 
 <script src="index.js"></script>
 <script src="content.js"></script>
+<script src="deep.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
