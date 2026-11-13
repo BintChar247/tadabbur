@@ -108,23 +108,32 @@ function applyPrefs(){
   $$('#s-theme button').forEach(b => b.classList.toggle('on', b.dataset.v === P.theme));
   $$('#s-lang button').forEach(b => b.classList.toggle('on', b.dataset.v === P.lang));
   $('#s-tl').classList.toggle('on', P.tl);
+  $$('.tl-btn').forEach(b => b.classList.toggle('on', P.tl));
   $('#s-ar').value = P.ar; $('#s-tr').value = P.tr;
   try { Native && Native.setBars(P.theme === 'day'); } catch(e){}
 }
 $$('#s-theme button').forEach(b => b.onclick = () => { P.theme = b.dataset.v; savePrefs(); applyPrefs(); });
 $$('#s-lang button').forEach(b => b.onclick = () => { P.lang = b.dataset.v; savePrefs(); applyPrefs(); refreshText(); });
-$('#s-tl').onclick = () => { P.tl = !P.tl; savePrefs(); applyPrefs(); refreshText(); };
+$('#s-tl').onclick = () => toggleTl();
 $('#s-ar').oninput = e => { P.ar = +e.target.value; savePrefs(); applyPrefs(); };
 $('#s-tr').oninput = e => { P.tr = +e.target.value; savePrefs(); applyPrefs(); };
+window.toggleTl = function(){ P.tl = !P.tl; savePrefs(); applyPrefs(); refreshText(); toast(P.tl ? 'Transliteration on' : 'Transliteration off'); };
 window.openSheet = () => { $('#sheet').classList.add('on'); $('#scrim').classList.add('on'); };
 window.closeSheet = () => { $('#sheet').classList.remove('on'); $('#scrim').classList.remove('on'); };
 function refreshText(){
   if (readerFor) { const y = scrollY; readerFor = 0; if (cur === 'read'){ ensureReader(); setTimeout(() => scrollTo(0, y), 0); } }
   renderVom(); if (isWide() && cur === 'surahs') showInlineOverview(selS);
   if (cur === 'surah') openOverview(selS, false);
+  if ($('#hlist').innerHTML) renderHadith();
+  if (cur === 'journey') renderJourney();
+  if (cur === 'detail') openSection(selSec);
+  if (cur === 'lessons') renderLessons();
+  if (cur === 'saved') renderSaved();
 }
 function toast(m){ const t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 1800); }
 const tr = v => P.lang === 'id' ? v.id : v.en;
+const qtl = t => String(t).replace(/AA/g, 'ʿ').replace(/\b([Aa])l(sh|th|dh|t|d|r|z|s|n)\2/g, (m, a, c) => a + c + '-' + c);
+const tlLine = (v, extra) => P.tl ? `<div class="tl8"${extra ? ' style="' + extra + '"' : ''}>${esc(qtl(v.tl))}</div>` : '';
 const trAny = v => P.lang === 'none' ? v.en : tr(v);
 const S = n => SU[n-1];
 
@@ -171,7 +180,7 @@ function renderVom(){
   load(s).then(vs => {
     const v = vs[k-1];
     $('#vom').innerHTML = `<div class="glow"></div><div class="eyebrow" style="text-align:center;margin-bottom:8px">Verse for this hour</div>
-      <div class="ar">${v.ar}</div><div class="en">“${esc(trAny(v))}”</div>
+      <div class="ar">${v.ar}</div>${tlLine(v, 'text-align:center')}<div class="en">“${esc(trAny(v))}”</div>
       <div class="ref">${esc(S(s).tl)} · ${s}:${k}</div>
       <div style="text-align:center;margin-top:12px"><button class="pill" onclick="openRead(${s},${k})">Read in context ${I.arrow}</button></div>`;
   });
@@ -220,11 +229,11 @@ function hadithCard(h, ctxS){
     <div class="hh"><div><div class="ht">${esc(h.title)}</div><div class="href">${esc(h.ref)}</div></div><span class="grade ${cls}">${esc(g.replace(/\s*\(.*\)/, ''))}</span></div>
     ${h.narrator ? `<div class="hn">${fmt(h.narrator)}</div>` : ''}
     <div class="he ${h.en.length > 420 ? 'clip' : ''}">${fmt(h.en)}</div>
-    <div class="har">${esc(h.ar)}</div>
+    <div class="har">${esc(h.ar)}</div><div class="htl ${P.tl ? 'on' : ''} ${h.en.length > 420 ? 'clip' : ''}"><b>Transliteration</b>${esc(h.tl)}</div>
     <div class="hwhy"><b>Why it's here</b>${fmt(h.note)}${/\(/.test(g) ? `<br><span style="font-size:12px;color:var(--ink3)">Grading: ${esc(g)}</span>` : ''}</div>
     <div class="hact">
       ${h.en.length > 420 ? '<button data-ha="more">Read full</button>' : ''}
-      <button data-ha="ar">Arabic</button>
+      <button data-ha="ar">Arabic</button><button data-ha="tl">Latin</button>
       <button data-ha="copy">Copy</button>
       ${h.links.map(l => (ctxS === l.s && !l.v) ? '' : `<button data-ha="go" data-s="${l.s}" data-v="${l.v ? l.v[0] : 0}">${esc(S(l.s).tl)}${l.v ? ' ' + l.s + ':' + l.v[0] + (l.v.length > 1 ? '–' + l.v[l.v.length-1] : '') : ''}</button>`).join('')}
     </div></div>`;
@@ -232,8 +241,9 @@ function hadithCard(h, ctxS){
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-ha]'); if (!b) return;
   const card = b.closest('.hcard'), h = HAD.find(x => x.id === card.dataset.h);
-  if (b.dataset.ha === 'more'){ card.querySelector('.he').classList.toggle('clip'); b.textContent = card.querySelector('.he').classList.contains('clip') ? 'Read full' : 'Show less'; }
+  if (b.dataset.ha === 'more'){ card.querySelector('.he').classList.toggle('clip'); const ht = card.querySelector('.htl'); if (ht) ht.classList.toggle('clip', card.querySelector('.he').classList.contains('clip')); b.textContent = card.querySelector('.he').classList.contains('clip') ? 'Read full' : 'Show less'; }
   if (b.dataset.ha === 'ar'){ card.querySelector('.har').classList.toggle('on'); }
+  if (b.dataset.ha === 'tl'){ card.querySelector('.htl').classList.toggle('on'); }
   if (b.dataset.ha === 'copy'){ copyText(`${h.narrator}\n${h.en}\n— ${h.ref} (${h.grade})`); }
   if (b.dataset.ha === 'go'){ const s = +b.dataset.s, v = +b.dataset.v; if (v) openRead(s, v); else openOverview(s); }
 });
@@ -269,7 +279,7 @@ function bindOverview(root, n){
   root.querySelectorAll('[data-ov]').forEach(b => b.onclick = () => { if (root.id === 'ov-inline') { selS = +b.dataset.ov; showInlineOverview(selS); } else openOverview(+b.dataset.ov, false); });
   load(n).then(vs => {
     const box = root.querySelector('[data-kv="' + n + '"]'); if (!box) return;
-    box.innerHTML = S(n).key.map(k => `<div class="kv"><div class="n">VERSE ${k}</div><div class="ar">${vs[k-1].ar}</div><div class="en">${esc(trAny(vs[k-1]))}</div><button class="lk" style="color:var(--gold);font-size:12px;font-weight:600;letter-spacing:.8px;margin-top:6px" data-rv="${k}">READ IN CONTEXT →</button></div>`).join('');
+    box.innerHTML = S(n).key.map(k => `<div class="kv"><div class="n">VERSE ${k}</div><div class="ar">${vs[k-1].ar}</div>${tlLine(vs[k-1])}<div class="en">${esc(trAny(vs[k-1]))}</div><button class="lk" style="color:var(--gold);font-size:12px;font-weight:600;letter-spacing:.8px;margin-top:6px" data-rv="${k}">READ IN CONTEXT →</button></div>`).join('');
     box.querySelectorAll('[data-rv]').forEach(b => b.onclick = () => openRead(n, +b.dataset.rv));
   });
 }
@@ -285,7 +295,7 @@ function verseHTML(s, v, vs){
   return `<div class="verse ${ref ? 'refrain has-badge' : ''}" id="v${n}" data-n="${n}">
     ${ref ? `<div class="badge">${I.spark}<span>The refrain</span></div>` : ''}
     <div class="ar">${v.ar}<span class="num"><b>${AR_DIG(n)}</b></span></div>
-    ${P.tl ? `<div class="tl8">${esc(v.tl)}</div>` : ''}
+    ${tlLine(v)}
     ${P.lang !== 'none' ? `<div class="tr"><span class="vn">${n}</span>${esc(tr(v))}</div>` : ''}
     <div class="acts">
       ${note ? `<button class="ins" data-a="note">${I.spark}Insight</button>` : ''}
@@ -393,7 +403,7 @@ function renderSaved(){
   const sorted = [...marks].sort((a, b) => { const [s1, v1] = a.split(':').map(Number), [s2, v2] = b.split(':').map(Number); return s1 - s2 || v1 - v2; });
   $('#saved').innerHTML = '<div class="loading"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>';
   Promise.all([...new Set(sorted.map(k => +k.split(':')[0]))].map(load)).then(() => {
-    $('#saved').innerHTML = `<div class="hgrid">${sorted.map(k => { const [s, n] = k.split(':').map(Number), v = cache[s][n-1]; return `<div class="card kv" style="padding:18px"><div class="n">${esc(S(s).tl.toUpperCase())} · ${s}:${n}</div><div class="ar">${v.ar}</div><div class="en">${esc(trAny(v))}</div><div class="btnrow"><button class="pill" data-s="${s}" data-v="${n}">${I.read} Open</button></div></div>`; }).join('')}</div>`;
+    $('#saved').innerHTML = `<div class="hgrid">${sorted.map(k => { const [s, n] = k.split(':').map(Number), v = cache[s][n-1]; return `<div class="card kv" style="padding:18px"><div class="n">${esc(S(s).tl.toUpperCase())} · ${s}:${n}</div><div class="ar">${v.ar}</div>${tlLine(v)}<div class="en">${esc(trAny(v))}</div><div class="btnrow"><button class="pill" data-s="${s}" data-v="${n}">${I.read} Open</button></div></div>`; }).join('')}</div>`;
     $$('#saved [data-s]').forEach(b => b.onclick = () => openRead(+b.dataset.s, +b.dataset.v));
   });
 }
@@ -465,7 +475,7 @@ function detailHTML(i){
     keys = [...new Set([...Object.keys(dp.notes).map(Number).filter(inR), ...dp.key.filter(inR), ...dp.lessons.map(l => l.v).filter(inR)])].sort((a, b) => a - b);
     if (!keys.length) keys = [s.from];
   }
-  const verseBlock = n => `<div class="kv"><div class="n">VERSE ${n}</div><div class="ar">${V[n-1].ar}</div><div class="en">${esc(trAny(V[n-1]))}</div>${dp.notes[n] && !s.key ? `<div class="callout" style="margin:10px 0 0"><span class="eyebrow">Insight</span><p>${fmt(dp.notes[n])}</p></div>` : ''}</div>`;
+  const verseBlock = n => `<div class="kv"><div class="n">VERSE ${n}</div><div class="ar">${V[n-1].ar}</div>${tlLine(V[n-1])}<div class="en">${esc(trAny(V[n-1]))}</div>${dp.notes[n] && !s.key ? `<div class="callout" style="margin:10px 0 0"><span class="eyebrow">Insight</span><p>${fmt(dp.notes[n])}</p></div>` : ''}</div>`;
   return `<div class="card" style="padding:22px">
     <div class="det-hero"><div class="big">${s.ar || AR_DIG(i + 1)}</div><div class="eyebrow">${esc(m.tl)} · part ${i + 1} of ${dp.secs.length}</div><h3>${esc(s.title)}</h3>${s.sub ? `<div class="sub">${fmt(s.sub)}</div>` : ''}</div>
     <div class="meta"><span class="chip"><b>${s.from}${s.to > s.from ? '–' + s.to : ''}</b>${s.to > s.from ? 'verses' : 'verse'}</span>${s.people ? `<span class="chip">${fmt(s.people)}</span>` : ''}</div>
@@ -495,9 +505,9 @@ function renderLessons(){
   const body = $('#lbody');
   load(dS).then(V => {
     if (lessonTab === 'lessons'){
-      body.innerHTML = `<div class="lessons-grid">${dp.lessons.map((l, i) => `<div class="card lesson"><div class="ln">${i+1}</div><div><b>${esc(l.t)}</b><p>${fmt(l.d)}</p><div class="ar" style="font-size:calc(var(--ar-size) - 8px);line-height:2;color:var(--gold2);margin:4px 0;text-align:right">${V[l.v-1].ar}</div><button class="lk" data-v="${l.v}">VERSE ${l.v} →</button></div></div>`).join('')}</div>`;
+      body.innerHTML = `<div class="lessons-grid">${dp.lessons.map((l, i) => `<div class="card lesson"><div class="ln">${i+1}</div><div><b>${esc(l.t)}</b><p>${fmt(l.d)}</p><div class="ar" style="font-size:calc(var(--ar-size) - 8px);line-height:2;color:var(--gold2);margin:4px 0;text-align:right">${V[l.v-1].ar}</div>${tlLine(V[l.v-1], 'margin:0 0 6px')}<button class="lk" data-v="${l.v}">VERSE ${l.v} →</button></div></div>`).join('')}</div>`;
     } else if (lessonTab === 'duas'){
-      body.innerHTML = `<div class="lessons-grid">${dp.duas.map(d => { const vs = V.slice(d.from - 1, d.to); return `<div class="card dua"><div class="eyebrow t">${esc(d.t)}</div><div class="ar">${vs.map(v => v.ar + ` <span style="color:var(--gold);font-size:.6em">﴿${AR_DIG(v.n)}﴾</span>`).join(' ')}</div><div class="en">${vs.map(v => esc(trAny(v))).join(' ')}</div><div style="text-align:center;margin-top:10px"><button class="lk" style="color:var(--gold);font-size:12px;font-weight:600;letter-spacing:.8px" data-v="${d.from}">VERSES ${d.from}${d.to > d.from ? '–' + d.to : ''}</button></div></div>`; }).join('')}</div>`;
+      body.innerHTML = `<div class="lessons-grid">${dp.duas.map(d => { const vs = V.slice(d.from - 1, d.to); return `<div class="card dua"><div class="eyebrow t">${esc(d.t)}</div><div class="ar">${vs.map(v => v.ar + ` <span style="color:var(--gold);font-size:.6em">﴿${AR_DIG(v.n)}﴾</span>`).join(' ')}</div>${P.tl ? `<div class="tl8" style="text-align:center">${vs.map(v => esc(qtl(v.tl))).join(' ')}</div>` : ''}<div class="en">${vs.map(v => esc(trAny(v))).join(' ')}</div><div style="text-align:center;margin-top:10px"><button class="lk" style="color:var(--gold);font-size:12px;font-weight:600;letter-spacing:.8px" data-v="${d.from}">VERSES ${d.from}${d.to > d.from ? '–' + d.to : ''}</button></div></div>`; }).join('')}</div>`;
     } else {
       body.innerHTML = `<div class="card"><div class="eyebrow">Tadabbur · تدبر</div><h3 class="sec">Questions for your heart</h3><p class="small" style="margin-top:0">Tadabbur means deep reflection on the Quran. Take one question with you today, perhaps after a prayer, and sit with it.</p>${dp.reflect.map(q => `<div class="q">${esc(q)}</div>`).join('')}</div>`;
     }

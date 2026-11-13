@@ -62,6 +62,7 @@
 <section class="view" id="v-read">
   <div class="top">
     <button class="ttl" id="rd-title" onclick="openOverview(curS)"></button>
+    <button class="iconbtn tl-btn" onclick="toggleTl()" aria-label="Transliteration" title="Transliteration"><span style="font-family:Cormorant,serif;font-weight:700;font-size:17px;line-height:1">Aa</span></button>
     <button class="iconbtn" onclick="toggleSearch()" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></button>
     <button class="iconbtn" onclick="openSheet()" aria-label="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button>
   </div>
@@ -76,7 +77,7 @@
   <div class="wrap">
     <p style="color:var(--ink2);margin:0 0 12px">Authentic hadith that explain a surah or verse: why it was revealed, how the Prophet <span class="saw">ﷺ</span> recited it, and its virtues. Each shows its collection, number and grading.</p>
     <div class="sbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input id="hq" placeholder="Search hadith (e.g. Fatihah, night, prayer)" oninput="renderHadith()"></div>
-    <div class="filters" id="hfilt"></div>
+    <div style="display:flex;align-items:center;gap:10px"><div class="filters" id="hfilt" style="flex:1"></div><button class="pill tl-btn tl-pill" onclick="toggleTl()"><span style="font-family:Cormorant,serif;font-weight:700">Aa</span> Transliteration</button></div>
     <div class="hgrid" id="hlist"></div>
   </div>
 </section>
@@ -142,7 +143,7 @@
     <div class="seg" id="s-theme" style="margin:0"><button data-v="night">Night</button><button data-v="day">Day</button></div></div>
   <div class="row"><label>Translation</label>
     <div class="seg" id="s-lang" style="margin:0"><button data-v="en">English</button><button data-v="id">Indonesia</button><button data-v="none">Arabic only</button></div></div>
-  <div class="row switch"><div><b style="font-weight:500">Transliteration</b><div class="small">Latin letters to help pronunciation</div></div><button class="tog" id="s-tl" aria-label="Transliteration"></button></div>
+  <div class="row switch"><div><b style="font-weight:500">Transliteration</b><div class="small">Latin letters for the Quran and hadith, to help pronunciation. Also the Aa button.</div></div><button class="tog" id="s-tl" aria-label="Transliteration"></button></div>
   <div class="row"><label>Arabic size</label><input type="range" min="22" max="48" id="s-ar"><div class="preview">رَبِّ زِدۡنِي عِلۡمٗا</div></div>
   <div class="row"><label>Translation size</label><input type="range" min="13" max="22" id="s-tr"></div>
   <div class="row small" id="sources"></div>

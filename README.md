@@ -4,7 +4,7 @@
 <p align="center"><b>Understand the meaning, history and context of the Quran, with linked authentic hadith.</b><br>
 An Android app designed for the Samsung Galaxy Z Fold, adapting between the cover screen and the unfolded inner screen.</p>
 
-<p align="center"><a href="https://github.com/BintChar247/tadabbur/raw/main/download/Tadabbur.apk"><b>⬇ Download Tadabbur.apk (v3.0, 2.2 MB)</b></a></p>
+<p align="center"><a href="https://github.com/BintChar247/tadabbur/raw/main/download/Tadabbur.apk"><b>⬇ Download Tadabbur.apk (v3.1, 2.2 MB)</b></a></p>
 
 ---
 
@@ -20,6 +20,7 @@ An Android app designed for the Samsung Galaxy Z Fold, adapting between the cove
   - lessons and questions for reflection.
 
   In total there are 423 sections and over 1,200 verse notes. Surah 26, Ash-Shu'ara, has the richest study, with a glossary and du'as.
+- **Transliteration toggle.** The **Aa** button in the reader, and the Transliteration pill on the Hadith screen, show Latin transliteration for every verse and every hadith. It also appears in key verses, lessons, du'as and saved verses. Hadith transliteration is generated from the fully vowelled Arabic by `tools/translit.py`.
 - **Reading tools.** Bookmarks, continue where you left off, search within a surah, copy and share a verse, Night and Day themes, and adjustable Arabic and translation size.
 - **Built for foldables.** The cover screen uses bottom navigation. The unfolded screen uses a side rail, list-and-detail layouts, and Arabic beside its translation. Folding or unfolding keeps your place.
 
