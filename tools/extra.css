@@ -1,0 +1,103 @@
+
+/* ===== v2 additions ===== */
+.top .sp{flex:1}
+.top .ttl{flex:1;min-width:0}
+.top .ttl h2{font-family:Cormorant,serif;font-weight:700;font-size:24px;margin:0;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .ttl small{display:block;color:var(--ink3);font-size:12px;letter-spacing:.4px}
+.top button.ttl{text-align:left}
+
+/* surah list */
+.filters{display:flex;gap:8px;overflow-x:auto;padding:2px 0 12px;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.filters button{flex:none;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink2);font-size:13px;font-weight:500}
+.filters button.on{background:var(--gold);color:#1a1408;border-color:var(--gold)}
+.sbox{position:relative;margin:4px 0 12px}
+.sbox input{width:100%;padding:13px 16px 13px 44px;border-radius:16px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;outline:none}
+.sbox input:focus{border-color:var(--gold)}
+.sbox svg{position:absolute;left:15px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--ink3)}
+.srow{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:13px 12px;border-radius:18px;border:1px solid transparent;transition:background .2s}
+.srow:active{background:var(--card)}
+.srow.sel{background:var(--card);border-color:var(--gold)}
+.srow .sn{flex:none;width:44px;height:44px;position:relative;display:grid;place-items:center}
+.srow .sn::before,.srow .sn::after{content:"";position:absolute;inset:7px;border:1.3px solid var(--goldDim);border-radius:3px}
+.srow .sn::after{transform:rotate(45deg)}
+.srow .sn b{position:relative;font-size:13px;color:var(--gold);font-weight:600}
+.srow .si{flex:1;min-width:0}
+.srow .si b{display:block;font-family:Cormorant,serif;font-size:20px;font-weight:700;line-height:1.15}
+.srow .si small{color:var(--ink3);font-size:12.5px}
+.srow .sa{font-family:Amiri,serif;font-size:24px;color:var(--gold);flex:none}
+.srow .deep{font-size:10px;letter-spacing:1px;color:#1a1408;background:var(--gold);border-radius:99px;padding:2px 7px;margin-left:6px;vertical-align:2px;font-family:Inter,sans-serif;font-weight:600}
+.jhead{font-size:11px;letter-spacing:2px;color:var(--gold);font-weight:600;padding:16px 12px 4px;text-transform:uppercase}
+
+/* surah overview */
+.ov-hero{text-align:center;padding:10px 0 4px;position:relative}
+.ov-hero .medal{width:200px;height:200px}
+.ov-hero .medal .name{font-size:46px}
+.ov-hero h3{font-family:Cormorant,serif;font-size:34px;margin:6px 0 0;font-weight:700;line-height:1.1}
+.ov-hero .sub{font-family:Cormorant,serif;font-style:italic;font-weight:600;font-size:20px;color:var(--ink2)}
+.themes{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px}
+.themes span{font-size:13px;padding:6px 12px;border-radius:999px;background:var(--card2);color:var(--gold);border:1px solid var(--line)}
+.deepcard{display:block;width:100%;text-align:left;background:linear-gradient(135deg,rgba(217,182,111,.2),rgba(217,182,111,.04));border:1px solid var(--gold);border-radius:22px;padding:18px 20px;margin:16px 0;position:relative;overflow:hidden}
+.deepcard b{font-family:Cormorant,serif;font-size:24px;display:block;line-height:1.15}
+.deepcard small{color:var(--ink2);font-size:14px;line-height:1.5;display:block;margin-top:4px}
+.deepcard .bg-ar{position:absolute;right:12px;bottom:-14px;font-family:Amiri,serif;font-size:70px;color:var(--gold);opacity:.12}
+.deepgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.deepgrid button{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12.5px;color:var(--ink2)}
+.deepgrid button svg{width:22px;height:22px;color:var(--gold)}
+.navsur{display:flex;gap:10px;margin:22px 0 10px}
+.navsur button{flex:1;border:1px solid var(--line);background:var(--card);border-radius:18px;padding:14px;text-align:left}
+.navsur button.r{text-align:right}
+.navsur small{display:block;font-size:11px;letter-spacing:1.2px;color:var(--gold);font-weight:600}
+.navsur b{font-family:Cormorant,serif;font-size:19px}
+
+/* hadith */
+.hcard{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;position:relative}
+.hcard+.hcard{margin-top:12px}
+.hcard .hh{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.hcard .ht{font-family:Cormorant,serif;font-size:21px;font-weight:700;line-height:1.2}
+.grade{flex:none;font-size:10.5px;font-weight:600;letter-spacing:.8px;padding:4px 9px;border-radius:99px;border:1px solid var(--accent);color:var(--accent);text-transform:uppercase;white-space:nowrap}
+.grade.h{border-color:var(--gold);color:var(--gold)}
+.hcard .href{font-size:12px;color:var(--gold);letter-spacing:.6px;margin-top:2px;font-weight:600}
+.hcard .hn{font-style:italic;color:var(--ink3);font-size:13.5px;margin-top:10px}
+.hcard .he{font-size:15px;line-height:1.7;color:var(--ink);margin-top:4px;white-space:pre-line}
+.hcard .he.clip{display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
+.hcard .har{display:none;font-family:Amiri,serif;font-size:21px;line-height:2;direction:rtl;text-align:right;color:var(--gold2);margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+:root.day .hcard .har{color:var(--ink)}
+.hcard .har.on{display:block}
+.hcard .hwhy{margin-top:12px;background:var(--card2);border-radius:14px;padding:10px 14px;font-size:13.5px;color:var(--ink2);line-height:1.55}
+.hcard .hwhy b{color:var(--gold);font-weight:600;font-size:11px;letter-spacing:1.2px;display:block;text-transform:uppercase}
+.hcard .hact{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.hcard .hact button{font-size:12.5px;padding:7px 12px;border-radius:99px;border:1px solid var(--line);color:var(--gold);background:var(--bg2)}
+.verse .hbox{display:none;margin-top:10px}
+.verse .hbox.on{display:block;animation:fade .3s}
+.surah-h{margin:4px 0 14px}
+.surah-h summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:16px;border:1px solid var(--line);background:var(--card);color:var(--gold);font-weight:500;font-size:14px}
+.surah-h summary::-webkit-details-marker{display:none}
+.surah-h[open] summary{margin-bottom:10px}
+.surah-h summary svg{width:18px;height:18px}
+.loading{text-align:center;color:var(--ink3);padding:60px 0}
+.loading .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--gold);margin:0 4px;animation:pulse 1s infinite alternate}
+.loading .dot:nth-child(2){animation-delay:.2s}.loading .dot:nth-child(3){animation-delay:.4s}
+@keyframes pulse{from{opacity:.2}to{opacity:1}}
+.cont{display:flex;align-items:center;gap:14px;width:100%;text-align:left}
+.cont .ci{flex:1}
+.cont .ci b{font-family:Cormorant,serif;font-size:22px;display:block;line-height:1.15}
+.cont .ci small{color:var(--ink3)}
+.cont .ca{font-family:Amiri,serif;color:var(--gold);font-size:30px}
+.secttl{display:flex;align-items:baseline;justify-content:space-between;margin:28px 0 10px}
+.secttl h3{font-family:Cormorant,serif;font-size:26px;margin:0;font-weight:700}
+.secttl button{color:var(--gold);font-size:13px;font-weight:500}
+
+#ov-inline{display:none}
+@media (min-width:700px){
+  .split2{display:grid;grid-template-columns:minmax(300px,380px) 1fr;gap:26px;align-items:start}
+  .split2 .pane-r{position:sticky;top:84px;max-height:calc(100vh - 100px);overflow:auto;border-radius:22px;padding-right:4px}
+  #ov-inline{display:block}
+  .hgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+  .hgrid .hcard+.hcard{margin-top:0}
+  .verse .hbox{grid-column:1}
+  .home2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .home2 .card+.card{margin-top:0}
+}
+@media (max-width:699px){ .split2 .pane-r{display:none} }
+.orn span{font-family:Amiri,serif;font-size:22px}

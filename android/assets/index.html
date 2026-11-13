@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tadabbur</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="pattern"></div>
+
+<div id="splash"><div class="s-in">
+  <svg viewBox="0 0 100 100"><g fill="none" stroke="#D9B66F" stroke-width="1.6"><rect x="22" y="22" width="56" height="56"/><rect x="22" y="22" width="56" height="56" transform="rotate(45 50 50)"/><circle cx="50" cy="50" r="17"/><circle cx="50" cy="50" r="46" stroke-opacity=".4"/></g></svg>
+  <div class="s-ar">تَدَبُّر</div>
+  <div class="s-en">Tadabbur</div>
+</div></div>
+
+<nav class="rail" id="rail"></nav>
+
+<div id="app"><main>
+
+<!-- HOME -->
+<section class="view on" id="v-home">
+  <div class="wrap">
+    <div style="display:flex;justify-content:flex-end;padding-top:14px"><button class="iconbtn" onclick="openSheet()" aria-label="Settings" id="home-gear"></button></div>
+    <div class="hero" id="hero" style="padding-top:0"></div>
+    <div class="home2">
+      <div class="card" id="cont"></div>
+      <div class="card vom" id="vom"></div>
+    </div>
+    <div class="secttl"><h3>Deep study</h3></div>
+    <div id="feature"></div>
+    <div class="secttl"><h3>Explore</h3></div>
+    <div class="grid" id="tiles"></div>
+    <div class="orn"><span>۞</span></div>
+    <p class="small" style="text-align:center;margin:0 10px" id="credits"></p>
+  </div>
+</section>
+
+<!-- SURAH INDEX -->
+<section class="view" id="v-surahs">
+  <div class="top"><h2>The 114 Surahs</h2><span class="ar-t">السُّوَر</span></div>
+  <div class="wrap">
+    <div class="split2">
+      <div>
+        <div class="sbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input id="sq" placeholder="Search by name, number or meaning" oninput="renderIndex()"></div>
+        <div class="filters" id="sfilt"></div>
+        <div id="slist"></div>
+      </div>
+      <div class="pane-r" id="ov-inline"></div>
+    </div>
+  </div>
+</section>
+
+<!-- SURAH OVERVIEW (cover) -->
+<section class="view" id="v-surah">
+  <div class="top"><button class="iconbtn" onclick="goBack()" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button><h2 id="ov-title"></h2></div>
+  <div class="wrap" id="ov"></div>
+</section>
+
+<!-- READER -->
+<section class="view" id="v-read">
+  <div class="top">
+    <button class="ttl" id="rd-title" onclick="openOverview(curS)"></button>
+    <button class="iconbtn" onclick="toggleSearch()" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></button>
+    <button class="iconbtn" onclick="openSheet()" aria-label="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button>
+  </div>
+  <div class="search" id="search"><input id="q" placeholder="Search this surah's translation…" oninput="runSearch(this.value)"></div>
+  <div class="wrap" id="reader"></div>
+  <button class="jump" id="jump" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 15l6-6 6 6"/></svg></button>
+</section>
+
+<!-- HADITH -->
+<section class="view" id="v-hadith">
+  <div class="top"><h2>Hadith &amp; the Quran</h2><span class="ar-t">الحديث</span></div>
+  <div class="wrap">
+    <p style="color:var(--ink2);margin:0 0 12px">Authentic hadith that explain a surah or verse: why it was revealed, how the Prophet <span class="saw">ﷺ</span> recited it, and its virtues. Each shows its collection, number and grading.</p>
+    <div class="sbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input id="hq" placeholder="Search hadith (e.g. Fatihah, night, prayer)" oninput="renderHadith()"></div>
+    <div class="filters" id="hfilt"></div>
+    <div class="hgrid" id="hlist"></div>
+  </div>
+</section>
+
+<!-- SAVED -->
+<section class="view" id="v-saved">
+  <div class="top"><h2>Saved</h2><span class="ar-t">المحفوظات</span></div>
+  <div class="wrap" id="saved"></div>
+</section>
+
+<!-- DEEP STUDY 26: CONTEXT -->
+<section class="view" id="v-context">
+  <div class="top"><button class="iconbtn" onclick="goBack()" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button><h2>History &amp; Context</h2><span class="ar-t">الشعراء</span></div>
+  <div class="wrap">
+    <div class="ctx-grid" id="ctx"></div>
+    <div class="orn"><span>۞</span></div>
+    <div class="eyebrow">Key words</div>
+    <h3 class="sec">A small glossary</h3>
+    <div class="card" id="gloss"></div>
+  </div>
+</section>
+
+<!-- DEEP STUDY 26: JOURNEY -->
+<section class="view" id="v-journey">
+  <div class="top"><button class="iconbtn" onclick="goBack()" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button><h2>The Journey</h2><span class="ar-t">الشعراء</span></div>
+  <div class="wrap">
+    <p style="color:var(--ink2);margin:0">Ash-Shu'ara moves in nine movements: an opening, seven prophets, and a closing. Each bar is sized by its number of verses.</p>
+    <div class="vmap" id="vmap"></div>
+    <div class="vmap-l"><span>v. 1</span><span>v. 227</span></div>
+    <div class="split">
+      <div class="tl" id="tl"></div>
+      <div class="pane-r" id="jdetail-inline"></div>
+    </div>
+  </div>
+</section>
+
+<!-- DEEP STUDY 26: SECTION DETAIL -->
+<section class="view" id="v-detail">
+  <div class="top"><button class="iconbtn" onclick="goBack()" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button><h2 id="dt-title"></h2></div>
+  <div class="wrap" id="detail"></div>
+</section>
+
+<!-- DEEP STUDY 26: LESSONS -->
+<section class="view" id="v-lessons">
+  <div class="top"><button class="iconbtn" onclick="goBack()" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button><h2>Lessons &amp; Reflection</h2><span class="ar-t">الشعراء</span></div>
+  <div class="wrap">
+    <div class="seg" id="lseg">
+      <button class="on" data-t="lessons">Lessons</button><button data-t="duas">Du'as</button><button data-t="reflect">Reflect</button>
+    </div>
+    <div id="lbody"></div>
+  </div>
+</section>
+
+</main></div>
+
+<nav class="bottom" id="bottom"></nav>
+
+<div class="scrim" id="scrim" onclick="closeSheet()"></div>
+<div class="sheet" id="sheet">
+  <div class="grab"></div>
+  <h4>Reading preferences</h4>
+  <div class="row"><label>Appearance</label>
+    <div class="seg" id="s-theme" style="margin:0"><button data-v="night">Night</button><button data-v="day">Day</button></div></div>
+  <div class="row"><label>Translation</label>
+    <div class="seg" id="s-lang" style="margin:0"><button data-v="en">English</button><button data-v="id">Indonesia</button><button data-v="none">Arabic only</button></div></div>
+  <div class="row switch"><div><b style="font-weight:500">Transliteration</b><div class="small">Latin letters to help pronunciation</div></div><button class="tog" id="s-tl" aria-label="Transliteration"></button></div>
+  <div class="row"><label>Arabic size</label><input type="range" min="22" max="48" id="s-ar"><div class="preview">رَبِّ زِدۡنِي عِلۡمٗا</div></div>
+  <div class="row"><label>Translation size</label><input type="range" min="13" max="22" id="s-tr"></div>
+  <div class="row small" id="sources"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="index.js"></script>
+<script src="content.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
