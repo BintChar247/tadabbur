@@ -4,7 +4,7 @@
 <p align="center"><b>Understand the meaning, history and context of the Quran, with linked authentic hadith.</b><br>
 An Android app designed for the Samsung Galaxy Z Fold, adapting between the cover screen and the unfolded inner screen.</p>
 
-<p align="center"><a href="https://github.com/BintChar247/tadabbur/releases/latest"><b>⬇ Download the latest APK</b></a></p>
+<p align="center"><a href="https://github.com/BintChar247/tadabbur/raw/main/download/Tadabbur.apk"><b>⬇ Download Tadabbur.apk (v2.0, 2.1 MB)</b></a></p>
 
 ---
 
@@ -29,7 +29,7 @@ An Android app designed for the Samsung Galaxy Z Fold, adapting between the cove
 
 ## Install
 
-1. Download `Tadabbur.apk` from the [latest release](https://github.com/BintChar247/tadabbur/releases/latest) on your phone.
+1. On your phone, download [`Tadabbur.apk`](https://github.com/BintChar247/tadabbur/raw/main/download/Tadabbur.apk). It is also on the [Releases](https://github.com/BintChar247/tadabbur/releases) page.
 2. Open it and allow "Install unknown apps" for your browser or Files app when asked.
 3. Play Protect may warn that it doesn't recognise the app, because it isn't from the Play Store. Tap **Install anyway**.
 
@@ -54,6 +54,7 @@ android/            Android app (WebView shell + offline web UI)
   build.sh          Build script (aapt, javac, dx, zipalign, apksigner)
 tools/              Scripts and sources used to generate the data
 docs/screenshots/   Screenshots
+download/           Tadabbur.apk, the latest signed build
 ```
 
 ## Building
